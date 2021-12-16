@@ -1,0 +1,92 @@
+﻿
+using UnityEngine;
+using UnityCore.Session;
+public class GameController : MonoBehaviour
+{
+    public PlayerController player;
+    public CameraController camera;
+    public ObstacleController obstacle;
+    public int PlayerScorePerUnit;
+
+    private SessionController m_Session;
+   public int m_progress  ;
+    public int bas;
+    private int players_Score; 
+
+    private SessionController sessio
+    {
+        get
+        {
+            if (!m_Session)
+            {
+                m_Session = SessionController.instance;
+            }
+            if (!m_Session)
+            {
+                Debug.LogWarning("Game is trying to access the session, but no instance of sessionController was found");
+
+            }
+            return m_Session;
+        }
+    }
+    #region Unity Functions
+    private void Start()
+    {
+        if (!sessio)
+        {
+            return;
+
+        }
+        sessio.InitializeGame(this);
+    }
+    #endregion
+
+    #region public Functions
+    
+    public void OnInit()
+    {
+        player.OnInit();
+        camera.OnInit();
+        obstacle.AddObstacle(m_progress);
+        bas = obstacle.MaxObjectSpawn;
+    }
+    public void OnUpdate()
+    {
+        player.OnUpdate();
+        camera.OnUpdate();
+        CheckPlayerProgress();
+        Debug.Log(PlayerScore());
+
+    }
+
+    public int PlayerScore()
+    {
+        players_Score = (int)player.transform.position.z / PlayerScorePerUnit;
+        return players_Score;
+    }
+    #endregion
+
+    #region Private Functions
+    private void CheckPlayerProgress()
+
+    {
+        if (player.transform.position.z / obstacle.interval > bas)
+        {
+          
+            //obstacle.b++;
+            obstacle.DeleteObstacle();
+            bas++;
+        }
+        else if (player.transform.position.z / obstacle.interval > -1)
+        {
+
+
+            obstacle.AddObstacle(m_progress);
+        }
+        
+
+
+    }
+    #endregion
+    
+}
